@@ -1,6 +1,6 @@
 ## Model Architecture
 
-                                   FatEdgeCentricGNN Model Architecture
+                                   FatEdgeCentricGNN Model Architecture:
 
                                                 (Input)
                                           (x, edge_index, edge_attr, batch)
@@ -143,6 +143,130 @@
                (Output Logits)
 
 
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+ ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------                             
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              EdgeCentricGNN Model Architecture:
+
+
+                              
+
+                                                (Input)
+                                          (x, edge_index, edge_attr, batch)
+                                                |
+              +-------------------------------------------------+
+              |                                                 |
+              v                                                 v
+        [Node Encoder] (Dropout)                    [Edge Encoder] (Dropout)
+           (x_encoded)                                (edge_attr_encoded)
+              |                                                 |
+              +-------------------------------------------------+
+                                     |
+                                     v
++---------------------------------------------------------------------------------------------------------------------------------+
+|                                                           GNN Layers (Nodes & Edges)                                            |
++---------------------------------------------------------------------------------------------------------------------------------+
+                                     |
+                                     | (x_encoded, edge_index, edge_attr_encoded)
+                                     v
+                             +-----------------------+
+                             | Block 2 (GINE Sequence) |
+                             +-----------------------+
+                                     |
+                                     |  x_init (for Block 2 skip)
+                                     |  -----------------------+
+                                     v                        |
+               [GINEConv 2_a] --(LeakyReLU, Dropout)--> [LayerNorm 2_a]
+                     |                                       |
+                     v                                       |
+               [GINEConv 2_b] --(LeakyReLU, Dropout)--> [LayerNorm 2_b]
+                     |                                       |
+                     v                                       |
+                (Add with skip_2(x_init))<------------------+----- [skip_2(x_init)]
+                     |                                       |
+                     v                                       |
+               [BatchNorm 2_block] (Post-skip BN for Block 2)
+                     |
+                     |  x_first_step (cloned for later accumulation)
+                     |  -------------------------------------------+
+                     v                                             |
+             +-----------------------+                             |
+             | Mid Layer 1 (Transformer) |                             |
+             +-----------------------+                             |
+                     |                                             |
+                     v                                             |
+     [TransformerConv (conv_mid2)] --(LeakyReLU, Dropout)--> [LayerNorm (bn_mid2)]
+                     |                                             |
+                     |  x_init (for Block 3 skip)                    |
+                     |  -----------------------+                     |
+                     v                        |                     |
+             +-----------------------+        |                     |
+             | Block 3 (GINE Sequence) |        |                     |
+             +-----------------------+        |                     |
+                     |                        |                     |
+                     v                        |                     |
+               [GINEConv 3_a] --(LeakyReLU, Dropout)--> [LayerNorm 3_a]
+                     |                                       |
+                     v                                       |
+               [GINEConv 3_b] --(LeakyReLU, Dropout)--> [LayerNorm 3_b]
+                     |                                       |
+                     v                                       |
+                (Add with skip_3(x_init))<------------------+----- [skip_3(x_init)]
+                     |                                       |
+                     v                                       |
+               [BatchNorm 3_block] (Post-skip BN for Block 3)
+                     |
+                     |  x_second_step (cloned for later accumulation)
+                     |  -------------------------------------------+
+                     v                                             |
+             +-----------------------+                             |
+             | Mid Layer 2 (Transformer) |                             |
+             +-----------------------+                             |
+                     |                                             |
+                     v                                             |
+       [TransformerConv (conv_mid)] --(LeakyReLU, Dropout)--> [LayerNorm (bn_mid)]
+                     |                                             |
+                     | (Add with x_second_step + x_first_step) <---+----- [x_second_step]
+                     |                                             |
+                     +---------------------------------------------+----- [x_first_step]
+                     v
+               [LayerNorm (bn_mid3)] (Post-Accumulated Skip BN)
+                     |
+                     v
+             +-----------------------+
+             | Final Layer (Transformer) |
+             +-----------------------+
+                     |
+                     v
+     [TransformerConv (conv_final)] --(Dropout, LeakyReLU)--> [BatchNorm (bn_final)]
+                     |
++---------------------------------------------------------------------------------------------------------------------------------+
+|                                                       Readout & Classification                                                |
++---------------------------------------------------------------------------------------------------------------------------------+
+                     |
+                     v
+              [Global Mean Pool] (using 'batch' tensor)
+                     |
+                     v
+           [Fully Connected Layers (fc)]
+             (Linear -> ReLU -> Linear -> ReLU -> Linear -> Linear -> ReLU -> Linear)
+                     |
+                     v
+               (Output Logits)
 
 ## Method Description
 
@@ -150,6 +274,9 @@
 Essencially is uses 3 "big Blocks" of 3 GINEconv layers with dropout, batch regularizations, and several residual connections. 
 Moreover after each bigBlock there is one block of Trasformer convolutions with a limited amout of heads. 
 The combinations of the two allows the net to learn well the relations between nodes and edges but not too well in order to avoid noise overfitting.
+
+There are two models: the FatEdgeCentricGNN and the EdgeCentricGNN very similar in terms of structure and performance. We used the FatEdgeCentricGNN for B,C and D 
+and the EdgeCentricGNN for A for maximum performance.
 
 
 ## File Structure
@@ -182,7 +309,9 @@ The combinations of the two allows the net to learn well the relations between n
 
 For Database D use : 
 
-node_dim = 1 
+    Model = FatEdgeCentricGNN
+
+    node_dim = 1 
     hidden_dim = 64
     output_dim = 6
     edge_dim = 7  
@@ -197,7 +326,9 @@ node_dim = 1
 
 For Database C use : 
 
-node_dim = 1 
+    Model = FatEdgeCentricGNN
+
+    node_dim = 1 
     hidden_dim = 64
     output_dim = 6
     edge_dim = 7  
@@ -212,7 +343,9 @@ node_dim = 1
 
 For Database B use : 
 
-node_dim = 1 
+    Model = FatEdgeCentricGNN
+    
+    node_dim = 1 
     hidden_dim = 64
     output_dim = 6
     edge_dim = 7  
@@ -226,16 +359,18 @@ node_dim = 1
 
 For Database A use : 
 
-node_dim = 1 
+    Model = EdgeCentricGNN
+    
+    node_dim = 1 
     hidden_dim = 64
     output_dim = 6
     edge_dim = 7  
-    dropout = 0.3
-    learning_rate = 0.005
+    dropout = 0.2
+    learning_rate = 0.001
     num_epochs = 100
-    batch_size = 64
+    batch_size = 16
     seed = 420
-    checkpoint for inference = model_B_best which is the same of model_B_epoch_84
+    checkpoint for inference = model_A_best which is the same of model_A_epoch_74
     loss = NoisyCrossEntropyLoss(p_noisy=0.2) 
 
 

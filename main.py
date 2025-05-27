@@ -185,12 +185,12 @@ def main(args):
         hidden_dim = 64
         output_dim = 6
         edge_dim = 7  
-        dropout = 0.3
-        learning_rate = 0.005
+        dropout = 0.2
+        learning_rate = 0.001
         num_epochs = 100
-        batch_size = 64
+        batch_size = 16
                  
-        model = models.FatEdgeCentricGNN  (
+        model = models.EdgeCentricGNN(
             node_dim=node_dim,
             hidden_dim=hidden_dim,
             output_dim=output_dim,
