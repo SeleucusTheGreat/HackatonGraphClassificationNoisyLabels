@@ -1,0 +1,33 @@
+2025-05-27 01:56:37,371 - training_B - INFO - Starting processing for dataset B
+2025-05-27 01:56:37,372 - training_B - INFO - Device: cuda
+2025-05-27 01:56:48,614 - training_B - INFO - Training mode: Training path provided
+2025-05-27 01:57:28,401 - training_B - INFO - Dataset split: 4480 training samples, 1120 validation samples
+2025-05-27 01:57:33,541 - training_B - INFO -   --> New best model saved with Val F1: 0.170170, epoch: 1
+2025-05-27 01:57:58,892 - training_B - INFO -   --> New best model saved with Val F1: 0.299718, epoch: 6
+2025-05-27 01:58:04,560 - training_B - INFO -   --> New best model saved with Val F1: 0.309593, epoch: 7
+2025-05-27 01:58:10,190 - training_B - INFO -   --> New best model saved with Val F1: 0.362608, epoch: 8
+2025-05-27 01:58:15,845 - training_B - INFO -   --> New best model saved with Val F1: 0.372814, epoch: 9
+2025-05-27 01:58:21,544 - training_B - INFO - Epoch 10 - Training Loss: 1.230621, Training Accuracy: 0.396429, Training F1: 0.355894, Validation Accuracy: 0.381250, Validation F1: 0.348434
+2025-05-27 01:58:31,636 - training_B - INFO -   --> New best model saved with Val F1: 0.433197, epoch: 12
+2025-05-27 01:58:36,563 - training_B - INFO -   --> New best model saved with Val F1: 0.439806, epoch: 13
+2025-05-27 01:59:11,041 - training_B - INFO - Epoch 20 - Training Loss: 1.163142, Training Accuracy: 0.480580, Training F1: 0.423306, Validation Accuracy: 0.465179, Validation F1: 0.417406
+2025-05-27 01:59:30,754 - training_B - INFO -   --> New best model saved with Val F1: 0.474139, epoch: 24
+2025-05-27 01:59:40,688 - training_B - INFO -   --> New best model saved with Val F1: 0.496662, epoch: 26
+2025-05-27 02:00:00,336 - training_B - INFO - Epoch 30 - Training Loss: 1.131523, Training Accuracy: 0.428571, Training F1: 0.393575, Validation Accuracy: 0.413393, Validation F1: 0.388787
+2025-05-27 02:00:49,339 - training_B - INFO - Epoch 40 - Training Loss: 1.106272, Training Accuracy: 0.531250, Training F1: 0.504959, Validation Accuracy: 0.510714, Validation F1: 0.486304
+2025-05-27 02:00:54,265 - training_B - INFO -   --> New best model saved with Val F1: 0.516967, epoch: 41
+2025-05-27 02:01:18,650 - training_B - INFO -   --> New best model saved with Val F1: 0.526585, epoch: 46
+2025-05-27 02:01:23,577 - training_B - INFO -   --> New best model saved with Val F1: 0.535509, epoch: 47
+2025-05-27 02:01:38,281 - training_B - INFO - Epoch 50 - Training Loss: 1.098175, Training Accuracy: 0.511830, Training F1: 0.474957, Validation Accuracy: 0.501786, Validation F1: 0.459947
+2025-05-27 02:02:27,050 - training_B - INFO - Epoch 60 - Training Loss: 1.076551, Training Accuracy: 0.421429, Training F1: 0.408068, Validation Accuracy: 0.383929, Validation F1: 0.370677
+2025-05-27 02:02:56,330 - training_B - INFO -   --> New best model saved with Val F1: 0.539111, epoch: 66
+2025-05-27 02:03:15,753 - training_B - INFO - Epoch 70 - Training Loss: 1.067742, Training Accuracy: 0.483036, Training F1: 0.431136, Validation Accuracy: 0.460714, Validation F1: 0.398045
+2025-05-27 02:03:25,424 - training_B - INFO -   --> New best model saved with Val F1: 0.547290, epoch: 72
+2025-05-27 02:04:04,351 - training_B - INFO - Epoch 80 - Training Loss: 1.057509, Training Accuracy: 0.416518, Training F1: 0.405886, Validation Accuracy: 0.397321, Validation F1: 0.390550
+2025-05-27 02:04:53,000 - training_B - INFO - Epoch 90 - Training Loss: 1.046213, Training Accuracy: 0.592187, Training F1: 0.578414, Validation Accuracy: 0.559821, Validation F1: 0.543264
+2025-05-27 02:05:41,221 - training_B - INFO - Epoch 100 - Training Loss: 1.047510, Training Accuracy: 0.476562, Training F1: 0.464294, Validation Accuracy: 0.442857, Validation F1: 0.439133
+2025-05-27 02:05:41,221 - training_B - INFO - Training completed. Checkpoints saved at epochs: []
+2025-05-27 02:05:41,221 - training_B - INFO - Loading best model for inference...
+2025-05-27 02:05:41,255 - training_B - INFO - Generating predictions...
+2025-05-27 02:05:41,787 - training_B - INFO - Predictions saved to submission/testset_B.csv
+

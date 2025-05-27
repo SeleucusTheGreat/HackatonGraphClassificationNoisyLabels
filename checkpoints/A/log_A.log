@@ -1,0 +1,45 @@
+2025-05-27 09:32:58,258 - training_A - INFO - Starting processing for dataset A
+2025-05-27 09:32:58,258 - training_A - INFO - Device: cuda
+2025-05-27 09:33:14,001 - training_A - INFO - Training mode: Training path provided
+2025-05-27 09:34:35,798 - training_A - INFO - Dataset split: 9024 training samples, 2256 validation samples
+2025-05-27 09:34:47,727 - training_A - INFO -   --> New best model saved with Val F1: 0.178530, epoch: 1
+2025-05-27 09:34:59,150 - training_A - INFO -   --> New best model saved with Val F1: 0.315978, epoch: 2
+2025-05-27 09:35:56,345 - training_A - INFO -   --> New best model saved with Val F1: 0.327445, epoch: 7
+2025-05-27 09:36:30,480 - training_A - INFO - Epoch 10 - Training Loss: 1.088554, Training Accuracy: 0.434065, Training F1: 0.403400, Validation Accuracy: 0.429965, Validation F1: 0.393703
+2025-05-27 09:36:30,510 - training_A - INFO -   --> New best model saved with Val F1: 0.393703, epoch: 10
+2025-05-27 09:36:53,435 - training_A - INFO -   --> New best model saved with Val F1: 0.455973, epoch: 12
+2025-05-27 09:37:04,918 - training_A - INFO -   --> New best model saved with Val F1: 0.464605, epoch: 13
+2025-05-27 09:38:24,558 - training_A - INFO - Epoch 20 - Training Loss: 0.963425, Training Accuracy: 0.600842, Training F1: 0.565808, Validation Accuracy: 0.588652, Validation F1: 0.547621
+2025-05-27 09:38:24,587 - training_A - INFO -   --> New best model saved with Val F1: 0.547621, epoch: 20
+2025-05-27 09:38:35,599 - training_A - INFO -   --> New best model saved with Val F1: 0.580334, epoch: 21
+2025-05-27 09:39:43,952 - training_A - INFO -   --> New best model saved with Val F1: 0.644118, epoch: 27
+2025-05-27 09:40:18,036 - training_A - INFO - Epoch 30 - Training Loss: 0.877301, Training Accuracy: 0.624668, Training F1: 0.607492, Validation Accuracy: 0.623670, Validation F1: 0.607746
+2025-05-27 09:41:37,304 - training_A - INFO -   --> New best model saved with Val F1: 0.671750, epoch: 37
+2025-05-27 09:42:00,078 - training_A - INFO -   --> New best model saved with Val F1: 0.679019, epoch: 39
+2025-05-27 09:42:11,710 - training_A - INFO - Epoch 40 - Training Loss: 0.837540, Training Accuracy: 0.653923, Training F1: 0.639347, Validation Accuracy: 0.649823, Validation F1: 0.635304
+2025-05-27 09:42:45,721 - training_A - INFO -   --> New best model saved with Val F1: 0.680229, epoch: 43
+2025-05-27 09:44:03,807 - training_A - INFO - Epoch 50 - Training Loss: 0.813322, Training Accuracy: 0.689162, Training F1: 0.677315, Validation Accuracy: 0.681294, Validation F1: 0.669712
+2025-05-27 09:44:36,910 - training_A - INFO -   --> New best model saved with Val F1: 0.686164, epoch: 53
+2025-05-27 09:45:55,152 - training_A - INFO - Epoch 60 - Training Loss: 0.796164, Training Accuracy: 0.659464, Training F1: 0.650535, Validation Accuracy: 0.663564, Validation F1: 0.654263
+2025-05-27 09:46:59,298 - training_A - INFO -   --> New best model saved with Val F1: 0.702238, epoch: 66
+2025-05-27 09:47:32,308 - training_A - INFO -   --> New best model saved with Val F1: 0.713312, epoch: 69
+2025-05-27 09:47:43,157 - training_A - INFO - Epoch 70 - Training Loss: 0.776358, Training Accuracy: 0.697473, Training F1: 0.685942, Validation Accuracy: 0.692376, Validation F1: 0.680468
+2025-05-27 09:49:31,724 - training_A - INFO - Epoch 80 - Training Loss: 0.772518, Training Accuracy: 0.664229, Training F1: 0.650934, Validation Accuracy: 0.651596, Validation F1: 0.637696
+2025-05-27 09:50:15,633 - training_A - INFO -   --> New best model saved with Val F1: 0.719837, epoch: 84
+2025-05-27 09:51:21,863 - training_A - INFO - Epoch 90 - Training Loss: 0.760206, Training Accuracy: 0.710550, Training F1: 0.696437, Validation Accuracy: 0.690160, Validation F1: 0.675184
+2025-05-27 09:53:12,648 - training_A - INFO - Epoch 100 - Training Loss: 0.753706, Training Accuracy: 0.692154, Training F1: 0.677366, Validation Accuracy: 0.680408, Validation F1: 0.665238
+2025-05-27 09:53:12,649 - training_A - INFO - Training completed. Checkpoints saved at epochs: []
+2025-05-27 09:53:12,649 - training_A - INFO - Loading best model for inference...
+2025-05-27 09:53:12,696 - training_A - INFO - Generating predictions...
+2025-05-27 09:53:13,708 - training_A - INFO - Predictions saved to submission/testset_A.csv
+2025-05-27 09:54:16,626 - training_A - INFO - Starting processing for dataset A
+2025-05-27 09:54:16,626 - training_A - INFO - Device: cuda
+2025-05-27 09:54:42,742 - training_A - INFO - Starting processing for dataset A
+2025-05-27 09:54:42,742 - training_A - INFO - Device: cuda
+2025-05-27 09:55:12,944 - training_A - INFO - Starting processing for dataset A
+2025-05-27 09:55:12,944 - training_A - INFO - Device: cuda
+2025-05-27 10:00:45,365 - training_A - INFO - Starting processing for dataset A
+2025-05-27 10:00:45,365 - training_A - INFO - Device: cuda
+2025-05-27 10:01:00,521 - training_A - INFO - Loading best model for inference...
+2025-05-27 10:01:00,553 - training_A - INFO - Generating predictions...
+2025-05-27 10:01:01,527 - training_A - INFO - Predictions saved to submission/testset_A.csv
