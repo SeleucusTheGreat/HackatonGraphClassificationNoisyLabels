@@ -5,18 +5,18 @@
                                                 (Input)
                                           (x, edge_index, edge_attr, batch)
                                                 |
-              +-------------------------------------------------+
-              |                                                 |
-              v                                                 v
-        [Node Encoder]                              [Edge Encoder]
-           (x_encoded)                                (edge_attr_encoded)
-              |                                                 |
-              +-------------------------------------------------+
+              +-----------------------------------+
+              |                                   |
+              v                                   v
+        [Node Encoder]                      [Edge Encoder]
+           (x_encoded)                      (edge_attr_encoded)
+              |                                   |
+              +-----------------------------------+
                                      |
                                      v
-+---------------------------------------------------------------------------------------------------------------------------------+
-|                                                           GNN Layers (Nodes & Edges)                                            |
-+---------------------------------------------------------------------------------------------------------------------------------+
+    +-----------------------------------------------------+
+    |                 GNN Layers (Nodes & Edges)          |
+    +-----------------------------------------------------+
                                      |
                                      | (x_encoded, edge_index, edge_attr_encoded)
                                      v
@@ -25,20 +25,30 @@
                              +-----------------------+
                                      |
                                      |  x_current (x_init for Block 2)
-                                     |  -----------------------+
-                                     v                        |
-               [GINEConv 2_a] --(LeakyReLU, Dropout)--> [BatchNorm 2_a]
-                     |                                       |
-                     v                                       |
-               [GINEConv 2_b] --(LeakyReLU, Dropout)--> [BatchNorm 2_b]
-                     |                                       |
-                     v                                       |
-               [GINEConv 2_c] --(LeakyReLU, Dropout)--> [BatchNorm 3_a] *Note: `bn3_a` used here
-                     |                                       |
-                     v                                       |
-                (Add with skip_2(x_init))<------------------+----- [skip_2(x_init)]
-                     |                                       |
-                     v                                       |
+                                     |  -------------------+
+                                     v                    |
+               [GINEConv 2_a]                             |
+                     |                                    |
+                     v (LeakyReLU, Dropout)               |
+               [BatchNorm 2_a]                            |
+                     |                                    |
+                     v                                    |
+               [GINEConv 2_b]                             |
+                     |                                    |
+                     v (LeakyReLU, Dropout)               |
+               [BatchNorm 2_b]                            |
+                     |                                    |
+                     v                                    |
+               [GINEConv 2_c]                             |
+                     |                                    |
+                     v (LeakyReLU, Dropout)               |
+               [BatchNorm 3_a] *Note: `bn3_a`             |
+                     |                                    |
+                     +------------------------------------+
+                     v           [skip_2(x_init)]
+                (Add with skip_2(x_init))<----
+                     |
+                     v
                [BatchNorm 2] (Post-skip BN for Block 2)
                      |
                      v
@@ -47,28 +57,41 @@
              +-----------------------+
                      |
                      v
-       [TransformerConv (conv_mid)] --(LeakyReLU, Dropout)--> [BatchNorm (bn_mid)]
+           [TransformerConv (conv_mid)]
+                     |
+                     v (LeakyReLU, Dropout)
+               [BatchNorm (bn_mid)]
                      |
                      | (x_current becomes x_init for Block 3)
-                     | -----------------------+
-                     v                        |
-             +-----------------------+        |
-             | Block 3 (GINE Sequence) |        |
-             +-----------------------+        |
-                     |                        |
-                     v                        |
-               [GINEConv 3_a] --(LeakyReLU, Dropout)--> [BatchNorm 3_a] *Note: `bn3_a` reused
-                     |                                       |
-                     v                                       |
-               [GINEConv 3_b] --(LeakyReLU, Dropout)--> [BatchNorm 3_b]
-                     |                                       |
-                     v                                       |
-               [GINEConv 3_c] --(LeakyReLU, Dropout)--> [BatchNorm 3_c]
-                     |                                       |
-                     v                                       |
-                (Add with skip_3(x_init))<------------------+----- [skip_3(x_init)]
-                     |                                       |
-                     v                                       |
+                     | -------------------+
+                     v                    |
+             +-----------------------+    |
+             | Block 3 (GINE Sequence) |    |
+             +-----------------------+    |
+                     |                    |
+                     v                    |
+               [GINEConv 3_a]             |
+                     |                    |
+                     v (LeakyReLU, Dropout)
+               [BatchNorm 3_a] *Note: `bn3_a` reused
+                     |                    |
+                     v                    |
+               [GINEConv 3_b]             |
+                     |                    |
+                     v (LeakyReLU, Dropout)
+               [BatchNorm 3_b]            |
+                     |                    |
+                     v                    |
+               [GINEConv 3_c]             |
+                     |                    |
+                     v (LeakyReLU, Dropout)
+               [BatchNorm 3_c]            |
+                     |                    |
+                     +--------------------+
+                     v           [skip_3(x_init)]
+                (Add with skip_3(x_init))<----
+                     |
+                     v
                [BatchNorm 2] (Reused Post-skip BN for Block 3)
                      |
                      v
@@ -77,47 +100,65 @@
              +-----------------------+
                      |
                      v
-     [TransformerConv (conv_mid2)] --(LeakyReLU, Dropout)--> [BatchNorm (bn_mid2)]
+     [TransformerConv (conv_mid2)]
+                     |
+                     v (LeakyReLU, Dropout)
+               [BatchNorm (bn_mid2)]
                      |
                      | (x_current becomes x_init for Block 4)
-                     | -----------------------+
-                     v                        |
-             +-----------------------+        |
-             | Block 4 (GINE Sequence) |        |
-             +-----------------------+        |
-                     |                        |
-                     v                        |
-               [GINEConv 4_a] --(LeakyReLU, Dropout)--> [BatchNorm 4_a]
-                     |                                       |
-                     v                                       |
-               [GINEConv 4_b] --(LeakyReLU, Dropout)--> [BatchNorm 4_b]
-                     |                                       |
-                     v                                       |
-               [GINEConv 4_c] --(LeakyReLU, Dropout)--------+ (No BN directly after)
-                     |                                       |
-                     v                                       |
-                (Add with skip_4(x_init))<------------------+----- [skip_4(x_init)]
-                     |                                       |
-                     v                                       |
+                     | -------------------+
+                     v                    |
+             +-----------------------+    |
+             | Block 4 (GINE Sequence) |    |
+             +-----------------------+    |
+                     |                    |
+                     v                    |
+               [GINEConv 4_a]             |
+                     |                    |
+                     v (LeakyReLU, Dropout)
+               [BatchNorm 4_a]            |
+                     |                    |
+                     v                    |
+               [GINEConv 4_b]             |
+                     |                    |
+                     v (LeakyReLU, Dropout)
+               [BatchNorm 4_b]            |
+                     |                    |
+                     v                    |
+               [GINEConv 4_c]             |
+                     |                    |
+                     v (LeakyReLU, Dropout)
+                     +--------------------+ (No BN directly after)
+                     v           [skip_4(x_init)]
+                (Add with skip_4(x_init))<----
+                     |
+                     v
                [BatchNorm 4_c] (Post-skip BN for Block 4)
                      |
                      | (x_current becomes x_init for Block 5)
-                     | -----------------------+
-                     v                        |
-             +-----------------------+        |
-             | Block 5 (GINE Sequence) |        |
-             +-----------------------+        |
-                     |                        |
-                     v                        |
-               [GINEConv 5_A] --(LeakyReLU, Dropout)--> [BatchNorm 5_a]
-                     |                                       |
-                     v                                       |
-               [GINEConv 5_B] --(LeakyReLU, Dropout)--> [BatchNorm 5_b]
-                     |                                       |
-                     v                                       |
-                (Add with skip_5(x_init))<------------------+----- [skip_5(x_init)]
-                     |                                       |
-                     v                                       |
+                     | -------------------+
+                     v                    |
+             +-----------------------+    |
+             | Block 5 (GINE Sequence) |    |
+             +-----------------------+    |
+                     |                    |
+                     v                    |
+               [GINEConv 5_A]             |
+                     |                    |
+                     v (LeakyReLU, Dropout)
+               [BatchNorm 5_a]            |
+                     |                    |
+                     v                    |
+               [GINEConv 5_B]             |
+                     |                    |
+                     v (LeakyReLU, Dropout)
+               [BatchNorm 5_b]            |
+                     |                    |
+                     +--------------------+
+                     v           [skip_5(x_init)]
+                (Add with skip_5(x_init))<----
+                     |
+                     v
                [BatchNorm 5] (Post-skip BN for Block 5)
                      |
                      v
@@ -126,11 +167,14 @@
              +-----------------------+
                      |
                      v
-     [TransformerConv (conv_final)] --(Dropout, LeakyReLU)--> [BatchNorm (bn_final)]
+     [TransformerConv (conv_final)]
                      |
-+---------------------------------------------------------------------------------------------------------------------------------+
-|                                                       Readout & Classification                                                |
-+---------------------------------------------------------------------------------------------------------------------------------+
+                     v (Dropout, LeakyReLU)
+               [BatchNorm (bn_final)]
+                     |
+    +-----------------------------------------------------+
+    |                 Readout & Classification            |
+    +-----------------------------------------------------+
                      |
                      v
               [Global Mean Pool] (using 'batch' tensor)
@@ -143,130 +187,138 @@
                (Output Logits)
 
 
-                              
-                              
-                              
-                              
-                              
-                              
-                              
-                              
-                              
- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------                             
-                              
-                              
-                              
-                              
-                              
-                              
-                              
+ -------------------------------------------------------------------------
+
                               EdgeCentricGNN Model Architecture:
 
-
-                              
-
-                                                (Input)
-                                          (x, edge_index, edge_attr, batch)
-                                                |
-              +-------------------------------------------------+
-              |                                                 |
-              v                                                 v
-        [Node Encoder] (Dropout)                    [Edge Encoder] (Dropout)
-           (x_encoded)                                (edge_attr_encoded)
-              |                                                 |
-              +-------------------------------------------------+
-                                     |
-                                     v
-+---------------------------------------------------------------------------------------------------------------------------------+
-|                                                           GNN Layers (Nodes & Edges)                                            |
-+---------------------------------------------------------------------------------------------------------------------------------+
-                                     |
-                                     | (x_encoded, edge_index, edge_attr_encoded)
-                                     v
-                             +-----------------------+
-                             | Block 2 (GINE Sequence) |
-                             +-----------------------+
-                                     |
-                                     |  x_init (for Block 2 skip)
-                                     |  -----------------------+
-                                     v                        |
-               [GINEConv 2_a] --(LeakyReLU, Dropout)--> [LayerNorm 2_a]
-                     |                                       |
-                     v                                       |
-               [GINEConv 2_b] --(LeakyReLU, Dropout)--> [LayerNorm 2_b]
-                     |                                       |
-                     v                                       |
-                (Add with skip_2(x_init))<------------------+----- [skip_2(x_init)]
-                     |                                       |
-                     v                                       |
-               [BatchNorm 2_block] (Post-skip BN for Block 2)
-                     |
-                     |  x_first_step (cloned for later accumulation)
-                     |  -------------------------------------------+
-                     v                                             |
-             +-----------------------+                             |
-             | Mid Layer 1 (Transformer) |                             |
-             +-----------------------+                             |
-                     |                                             |
-                     v                                             |
-     [TransformerConv (conv_mid2)] --(LeakyReLU, Dropout)--> [LayerNorm (bn_mid2)]
-                     |                                             |
-                     |  x_init (for Block 3 skip)                    |
-                     |  -----------------------+                     |
-                     v                        |                     |
-             +-----------------------+        |                     |
-             | Block 3 (GINE Sequence) |        |                     |
-             +-----------------------+        |                     |
-                     |                        |                     |
-                     v                        |                     |
-               [GINEConv 3_a] --(LeakyReLU, Dropout)--> [LayerNorm 3_a]
-                     |                                       |
-                     v                                       |
-               [GINEConv 3_b] --(LeakyReLU, Dropout)--> [LayerNorm 3_b]
-                     |                                       |
-                     v                                       |
-                (Add with skip_3(x_init))<------------------+----- [skip_3(x_init)]
-                     |                                       |
-                     v                                       |
-               [BatchNorm 3_block] (Post-skip BN for Block 3)
-                     |
-                     |  x_second_step (cloned for later accumulation)
-                     |  -------------------------------------------+
-                     v                                             |
-             +-----------------------+                             |
-             | Mid Layer 2 (Transformer) |                             |
-             +-----------------------+                             |
-                     |                                             |
-                     v                                             |
-       [TransformerConv (conv_mid)] --(LeakyReLU, Dropout)--> [LayerNorm (bn_mid)]
-                     |                                             |
-                     | (Add with x_second_step + x_first_step) <---+----- [x_second_step]
-                     |                                             |
-                     +---------------------------------------------+----- [x_first_step]
-                     v
-               [LayerNorm (bn_mid3)] (Post-Accumulated Skip BN)
-                     |
-                     v
-             +-----------------------+
-             | Final Layer (Transformer) |
-             +-----------------------+
-                     |
-                     v
-     [TransformerConv (conv_final)] --(Dropout, LeakyReLU)--> [BatchNorm (bn_final)]
-                     |
-+---------------------------------------------------------------------------------------------------------------------------------+
-|                                                       Readout & Classification                                                |
-+---------------------------------------------------------------------------------------------------------------------------------+
-                     |
-                     v
-              [Global Mean Pool] (using 'batch' tensor)
-                     |
-                     v
-           [Fully Connected Layers (fc)]
-             (Linear -> ReLU -> Linear -> ReLU -> Linear -> Linear -> ReLU -> Linear)
-                     |
-                     v
-               (Output Logits)
+                                           (Input)
+                                     (x, edge_index, edge_attr, batch)
+                                           |
+             +-----------------------------------+
+             |                                   |
+             v                                   v
+       [Node Encoder] (Dropout)            [Edge Encoder] (Dropout)
+          (x_encoded)                      (edge_attr_encoded)
+             |                                   |
+             +-----------------------------------+
+                            |
+                            v
+   +-----------------------------------------------------+
+   |                 GNN Layers (Nodes & Edges)          |
+   +-----------------------------------------------------+
+                            |
+                            | (x_encoded, edge_index, edge_attr_encoded)
+                            v
+                    +-----------------------+
+                    | Block 2 (GINE Sequence) |
+                    +-----------------------+
+                            |
+                            | x_init (for Block 2 skip)
+                            | -------------------+
+                            v                    |
+              [GINEConv 2_a]                     |
+                    |                            |
+                    v (LeakyReLU, Dropout)       |
+              [LayerNorm 2_a]                    |
+                    |                            |
+                    v                            |
+              [GINEConv 2_b]                     |
+                    |                            |
+                    v (LeakyReLU, Dropout)       |
+              [LayerNorm 2_b]                    |
+                    |                            |
+                    +----------------------------+
+                    v           [skip_2(x_init)]
+          (Add with skip_2(x_init))<----
+                    |
+                    v
+              [BatchNorm 2_block] (Post-skip BN for Block 2)
+                    |
+                    | x_first_step (cloned for later accumulation)
+                    | -----------------------------+
+                    v                              |
+            +-----------------------+              |
+            | Mid Layer 1 (Transformer) |              |
+            +-----------------------+              |
+                    |                              |
+                    v                              |
+    [TransformerConv (conv_mid2)]                  |
+                    |                              |
+                    v (LeakyReLU, Dropout)         |
+              [LayerNorm (bn_mid2)]                |
+                    |                              |
+                    | x_init (for Block 3 skip)    |
+                    | -------------------+         |
+                    v                    |         |
+            +-----------------------+    |         |
+            | Block 3 (GINE Sequence) |    |         |
+            +-----------------------+    |         |
+                    |                    |         |
+                    v                    |         |
+              [GINEConv 3_a]             |         |
+                    |                    |         |
+                    v (LeakyReLU, Dropout)         |
+              [LayerNorm 3_a]            |         |
+                    |                    |         |
+                    v                    |         |
+              [GINEConv 3_b]             |         |
+                    |                    |         |
+                    v (LeakyReLU, Dropout)         |
+              [LayerNorm 3_b]            |         |
+                    |                    |         |
+                    +--------------------+         |
+                    v           [skip_3(x_init)]   |
+          (Add with skip_3(x_init))<----           |
+                    |                              |
+                    v                              |
+              [BatchNorm 3_block] (Post-skip BN for Block 3)
+                    |                              |
+                    | x_second_step (cloned for later accumulation)
+                    | -----------------------------+
+                    v                              |
+            +-----------------------+              |
+            | Mid Layer 2 (Transformer) |              |
+            +-----------------------+              |
+                    |                              |
+                    v                              |
+      [TransformerConv (conv_mid)]                 |
+                    |                              |
+                    v (LeakyReLU, Dropout)         |
+              [LayerNorm (bn_mid)]                 |
+                    |                              |
+        (From x_second_step) <---+                 |
+        (From x_first_step)  <---+                 |
+                    |                              |
+                    v                              |
+          (Add with current output + x_second_step + x_first_step)
+                    |
+                    v
+              [LayerNorm (bn_mid3)] (Post-Accumulated Skip BN)
+                    |
+                    v
+            +-----------------------+
+            | Final Layer (Transformer) |
+            +-----------------------+
+                    |
+                    v
+    [TransformerConv (conv_final)]
+                    |
+                    v (Dropout, LeakyReLU)
+              [BatchNorm (bn_final)]
+                    |
+   +-----------------------------------------------------+
+   |                 Readout & Classification            |
+   +-----------------------------------------------------+
+                    |
+                    v
+             [Global Mean Pool] (using 'batch' tensor)
+                    |
+                    v
+          [Fully Connected Layers (fc)]
+            (Linear -> ReLU -> Linear -> ReLU -> Linear -> Linear -> ReLU -> Linear)
+                    |
+                    v
+              (Output Logits)
 
 ## Method Description
 
